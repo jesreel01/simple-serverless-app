@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #taskInput {
+            padding: 10px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: white;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 380px;
+        }
+
+        .task-text {
+            flex-grow: 1;
+        }
+
+        .task-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        li button {
+            background-color: #d9534f;
+        }
+
+        li button:hover {
+            background-color: #c9302c;
+        }
+
+        .edit-btn {
+            background-color: #f0ad4e;
+        }
+
+        .edit-btn:hover {
+            background-color: #ec971f;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>To-Do-List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task">
+    <button onclick="addTask()">Add</button>
+    <ul id="taskList"></ul>
+    <script>
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            if (taskText === '') return;
+
+            const li = document.createElement('li');
+            
+            const taskSpan = document.createElement('span');
+            taskSpan.className = 'task-text';
+            taskSpan.textContent = taskText;
+            li.appendChild(taskSpan);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'task-buttons';
+
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.className = 'edit-btn';
+            editButton.onclick = () => editTask(li);
+            buttonContainer.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteTask(li);
+            buttonContainer.appendChild(deleteButton);
+
+            li.appendChild(buttonContainer);
+            document.getElementById('taskList').appendChild(li);
+            taskInput.value = '';
+        }
+
+        function editTask(li) {
+            const taskSpan = li.querySelector('.task-text');
+            if (!taskSpan) {
+                console.error('Task span not found');
+                return;
+            }
+            
+            const currentTask = taskSpan.textContent;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentTask;
+            input.style.flex = '1';
+            input.style.padding = '5px';
+            input.style.border = '1px solid #ccc';
+            input.style.borderRadius = '3px';
+            
+            taskSpan.style.display = 'none';
+            li.insertBefore(input, taskSpan);
+            input.focus();
+            input.select();
+            
+            function saveEdit() {
+                const newTask = input.value.trim();
+                if (newTask !== '') {
+                    taskSpan.textContent = newTask;
+                }
+                taskSpan.style.display = 'block';
+                li.removeChild(input);
+            }
+            
+            function cancelEdit() {
+                taskSpan.style.display = 'block';
+                li.removeChild(input);
+            }
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+            
+            input.addEventListener('blur', function() {
+                saveEdit();
+            });
+        }
+
+        function deleteTask(li) {
+            li.remove();
+        }
+    </script>
+</body>
+
+</html>
